@@ -1,0 +1,22 @@
+<!doctype html>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Thank You — AI Foreclosure CRM</title>
+<style>
+  body{max-width:600px;margin:40px auto;font-family:system-ui,Arial;text-align:center}
+  .card{border:1px solid #eee;border-radius:12px;padding:30px;box-shadow:0 1px 8px rgba(0,0,0,.08)}
+  h1{color:#2c7a2c}
+</style>
+
+<div class="card">
+  <h1>Subscription Successful 🎉</h1>
+  <p>Thank you for subscribing to the <b id="plan">plan</b> plan.</p>
+  <p>Your subscription ID is <code id="sub"></code>.</p>
+  <p>You’ll receive an email shortly with your login link.</p>
+  <a href="pricing.html">← Back to pricing</a>
+</div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  document.getElementById('plan').textContent = params.get('plan') || 'basic';
+  document.getElementById('sub').textContent = params.get('subscription_id') || 'N/A';
+</script>
