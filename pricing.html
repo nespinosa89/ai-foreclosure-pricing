@@ -1,19 +1,72 @@
 <!doctype html>
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>AI Foreclosure CRM — Pricing</title>
-<style>
-  body{max-width:720px;margin:40px auto;font-family:system-ui,Arial}
-  .card{border:1px solid #eee;border-radius:12px;padding:20px;margin:12px 0;box-shadow:0 1px 8px rgba(0,0,0,.06)}
-  h1{margin:0 0 12px}
-  .muted{color:#666}
-</style>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Foreclosure CRM – Pricing</title>
 
-<h1>AI Foreclosure CRM</h1>
-<p class="muted">Choose a plan to get started. After checkout you’ll receive a login link by email.</p>
+  <!-- PayPal SDK -->
+  <script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&vault=true&intent=subscription"></script>
 
-<div class="card">
-  <h2>Basic — $299/mo</h2>
-  <div id="basic"></div>
-</div>
+  <style>
+    body { font-family: Arial, sans-serif; background: #0b0b10; color: #e9ecf4; margin: 0; padding: 0; }
+    .container { max-width: 800px; margin: 50px auto; padding: 20px; }
+    h1 { font-size: 32px; margin-bottom: 10px; }
+    p { color: #9aa0b4; margin-bottom: 30px; }
+    .plans { display: flex; flex-wrap: wrap; gap: 20px; }
+    .plan { background: #111422; border: 1px solid #1b2033; border-radius: 12px; flex: 1; padding: 25px; min-width: 280px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+    .plan h2 { margin: 0 0 10px; font-size: 22px; }
+    .plan p { color: #b3b8c9; font-size: 15px; margin-bottom: 20px; }
+    footer { text-align: center; margin-top: 40px; color: #888; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>AI Foreclosure CRM</h1>
+    <p>Choose a plan to get started. After checkout, you’ll receive a login link by email.</p>
 
-<div class="card">
+    <div class="plans">
+      <div class="plan">
+        <h2>Basic — $299/mo</h2>
+        <p>Perfect for one market (one county) and one lead source.</p>
+        <div id="paypal-basic"></div>
+      </div>
+
+      <div class="plan">
+        <h2>Pro — $349/mo</h2>
+        <p>Includes multiple lead sources and extended data coverage.</p>
+        <div id="paypal-pro"></div>
+      </div>
+    </div>
+
+    <footer>Secure payments handled by PayPal Subscriptions</footer>
+  </div>
+
+  <script>
+    // Replace these with your actual PayPal IDs:
+    const BASIC_PLAN_ID = P-4WB60771BW6228915NEEM3WA
+    const PRO_PLAN_ID = P-280022485U8934712NEEM5DI
+    const ONBOARD_URL = 'https://foreclosure-scraper-nicole210.replit.app/billing/onboarding';
+
+    paypal.Buttons({
+      style: { shape: 'rect', color: 'gold', layout: 'vertical', label: 'subscribe' },
+      createSubscription: function(data, actions) {
+        return actions.subscription.create({ plan_id: BASIC_PLAN_ID });
+      },
+      onApprove: function(data, actions) {
+        window.location.href = `${ONBOARD_URL}?subscription_id=${data.subscriptionID}&plan=basic`;
+      }
+    }).render('#paypal-basic');
+
+    paypal.Buttons({
+      style: { shape: 'rect', color: 'gold', layout: 'vertical', label: 'subscribe' },
+      createSubscription: function(data, actions) {
+        return actions.subscription.create({ plan_id: PRO_PLAN_ID });
+      },
+      onApprove: function(data, actions) {
+        window.location.href = `${ONBOARD_URL}?subscription_id=${data.subscriptionID}&plan=pro`;
+      }
+    }).render('#paypal-pro');
+  </script>
+</body>
+</html>
