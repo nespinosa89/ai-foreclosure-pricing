@@ -3,27 +3,32 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AI Foreclosure CRM – Pricing</title>
+  <title>Solution Focused CRM – Pricing</title>
 
-  <!-- PayPal SDK -->
-  <script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&vault=true&intent=subscription"></script>
+  
+  <script src="https://www.paypal.com/sdk/js?client-id=AdYHUzTHDr0JG_eRedrDqhHAmF2SmYvNIiC9Hc7pTaRAMERxtaMcOUizMad7u7hCkC3yx38RcnBocHJg&vault=true&intent=subscription"></script>
 
   <style>
-    body { font-family: Arial, sans-serif; background: #0b0b10; color: #e9ecf4; margin: 0; padding: 0; }
-    .container { max-width: 800px; margin: 50px auto; padding: 20px; }
-    h1 { font-size: 32px; margin-bottom: 10px; }
-    p { color: #9aa0b4; margin-bottom: 30px; }
-    .plans { display: flex; flex-wrap: wrap; gap: 20px; }
-    .plan { background: #111422; border: 1px solid #1b2033; border-radius: 12px; flex: 1; padding: 25px; min-width: 280px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
-    .plan h2 { margin: 0 0 10px; font-size: 22px; }
-    .plan p { color: #b3b8c9; font-size: 15px; margin-bottom: 20px; }
-    footer { text-align: center; margin-top: 40px; color: #888; font-size: 13px; }
+    :root{--bg:#0b0b10;--card:#111422;--line:#1b2033;--text:#e9ecf4;--muted:#9aa0b4}
+    html,body{background:var(--bg);color:var(--text);margin:0}
+    .container{max-width:980px;margin:56px auto;padding:0 20px}
+    h1{font-size:32px;margin:0 0 8px}
+    p.lead{color:var(--muted);margin:0 0 28px}
+    .plans{display:grid;grid-template-columns:1fr;gap:20px}
+    @media(min-width:860px){.plans{grid-template-columns:1fr 1fr}}
+    .plan{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:0 10px 24px rgba(0,0,0,.35)}
+    .plan h2{margin:0 0 8px}
+    .plan p{margin:0 0 18px;color:#b3b8c9}
+    .hint{color:var(--muted);text-align:center;margin-top:36px;font-size:13px}
+    .error{background:#311; border:1px solid #622; color:#f6dcdc; padding:10px 12px; border-radius:10px; margin:16px 0}
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>AI Foreclosure CRM</h1>
-    <p>Choose a plan to get started. After checkout, you’ll receive a login link by email.</p>
+    <h1>Solution Focused CRM</h1>
+    <p class="lead"> Your new CRM that updates DAILY with Probate Leads, Forecloure leads, and all your marketing ALL IN ONE! Choose a plan to get started. After checkout, you’ll receive a login link by email.</p>
+
+    <div id="diag" class="error" style="display:none"></div>
 
     <div class="plans">
       <div class="plan">
@@ -39,34 +44,46 @@
       </div>
     </div>
 
-    <footer>Secure payments handled by PayPal Subscriptions</footer>
+    <p class="hint">Secure payments handled by PayPal Subscriptions</p>
   </div>
 
   <script>
-    // Replace these with your actual PayPal IDs:
-    const BASIC_PLAN_ID = P-4WB60771BW6228915NEEM3WA
-    const PRO_PLAN_ID = P-280022485U8934712NEEM5DI
-    const ONBOARD_URL = 'https://foreclosure-scraper-nicole210.replit.app/billing/onboarding';
+    
+    const PAYPAL_CLIENT_ID = 'AdYHUzTHDr0JG_eRedrDqhHAmF2SmYvNIiC9Hc7pTaRAMERxtaMcOUizMad7u7hCkC3yx38RcnBocHJg;
+    const BASIC_PLAN_ID    = 'P-4WB60771BW6228915NEEM3WA;
+    const PRO_PLAN_ID      = 'P-280022485U8934712NEEM5DI;
+    // Where to send the user after PayPal approves the subscription:
+    const ONBOARD_URL      = 'https://foreclosure-scraper-nicole210.replit.app/billing/onboarding';
+    // =============================================
 
-    paypal.Buttons({
-      style: { shape: 'rect', color: 'gold', layout: 'vertical', label: 'subscribe' },
-      createSubscription: function(data, actions) {
-        return actions.subscription.create({ plan_id: BASIC_PLAN_ID });
-      },
-      onApprove: function(data, actions) {
-        window.location.href = `${ONBOARD_URL}?subscription_id=${data.subscriptionID}&plan=basic`;
-      }
-    }).render('#paypal-basic');
+    const diag = document.getElementById('diag');
+    function showErr(msg){ diag.style.display='block'; diag.textContent=msg; }
 
-    paypal.Buttons({
-      style: { shape: 'rect', color: 'gold', layout: 'vertical', label: 'subscribe' },
-      createSubscription: function(data, actions) {
-        return actions.subscription.create({ plan_id: PRO_PLAN_ID });
-      },
-      onApprove: function(data, actions) {
-        window.location.href = `${ONBOARD_URL}?subscription_id=${data.subscriptionID}&plan=pro`;
-      }
-    }).render('#paypal-pro');
+    // Sanity check so we don’t silently fail
+    if (!window.paypal) {
+      showErr('PayPal SDK did not load. Check your client-id in the <script> URL.');
+    }
+
+    function wireButton(container, planId, planKey){
+      paypal.Buttons({
+        style:{shape:'rect',color:'gold',layout:'vertical',label:'subscribe'},
+        createSubscription:(_, actions)=> actions.subscription.create({ plan_id: planId }),
+        onApprove: (data)=> {
+          // PayPal returns data.subscriptionID
+          window.location.href = `${ONBOARD_URL}?subscription_id=${encodeURIComponent(data.subscriptionID)}&plan=${encodeURIComponent(planKey)}`;
+        },
+        onError: (err)=> showErr('PayPal error: ' + (err?.message || err))
+      }).render(container);
+    }
+
+    try {
+      wireButton('#paypal-basic', BASIC_PLAN_ID, P-4WB60771BW6228915NEEM3WA;
+      wireButton('#paypal-pro',   PRO_PLAN_ID,   P-280022485U8934712NEEM5DI;
+    } catch(e) {
+      showErr('Failed to render PayPal buttons. Verify your Plan IDs and try again.');
+    }
   </script>
 </body>
 </html>
+
+    
