@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Solution Focused CRM – Pricing</title>
 
-  
+  <!-- PayPal SDK (sandbox) -->
   <script src="https://www.paypal.com/sdk/js?client-id=AdYHUzTHDr0JG_eRedrDqhHAmF2SmYvNIiC9Hc7pTaRAMERxtaMcOUizMad7u7hCkC3yx38RcnBocHJg&vault=true&intent=subscription"></script>
 
   <style>
@@ -26,7 +26,7 @@
 <body>
   <div class="container">
     <h1>Solution Focused CRM</h1>
-    <p class="lead"> Your new CRM that updates DAILY with Probate Leads, Forecloure leads, and all your marketing ALL IN ONE! Choose a plan to get started. After checkout, you’ll receive a login link by email.</p>
+    <p class="lead">Your new CRM that updates DAILY with Probate Leads, Foreclosure leads, and all your marketing ALL IN ONE! Choose a plan to get started. After checkout, you’ll receive a login link by email.</p>
 
     <div id="diag" class="error" style="display:none"></div>
 
@@ -48,37 +48,36 @@
   </div>
 
   <script>
-    
+    // Your IDs (strings MUST be quoted)
     const PAYPAL_CLIENT_ID = 'AdYHUzTHDr0JG_eRedrDqhHAmF2SmYvNIiC9Hc7pTaRAMERxtaMcOUizMad7u7hCkC3yx38RcnBocHJg';
     const BASIC_PLAN_ID    = 'P-4WB60771BW6228915NEEM3WA';
     const PRO_PLAN_ID      = 'P-280022485U8934712NEEM5DI';
-    // Where to send the user after PayPal approves the subscription:
+
+    // After approval, send to your app to finish onboarding
     const ONBOARD_URL      = 'https://foreclosure-scraper-nicole210.replit.app/billing/onboarding';
-    // =============================================
 
     const diag = document.getElementById('diag');
     function showErr(msg){ diag.style.display='block'; diag.textContent=msg; }
 
-    // Sanity check so we don’t silently fail
     if (!window.paypal) {
-      showErr('PayPal SDK did not load. Check your client-id in the <script> URL.');
+      showErr('PayPal SDK did not load. Check your client-id in the <script> URL (ad-blockers can also block it).');
     }
 
     function wireButton(container, planId, planKey){
       paypal.Buttons({
-        style:{shape:'rect',color:'gold',layout:'vertical',label:'subscribe'},
-        createSubscription:(_, actions)=> actions.subscription.create({ plan_id: planId }),
-        onApprove: (data)=> {
-          // PayPal returns data.subscriptionID
-          window.location.href = `${ONBOARD_URL}?subscription_id=${encodeURIComponent(data.subscriptionID)}&plan=${encodeURIComponent(planKey)}`;
+        style:{ shape:'rect', color:'gold', layout:'vertical', label:'subscribe' },
+        createSubscription: (_, actions) => actions.subscription.create({ plan_id: planId }),
+        onApprove: (data) => {
+          window.location.href =
+            `${ONBOARD_URL}?subscription_id=${encodeURIComponent(data.subscriptionID)}&plan=${encodeURIComponent(planKey)}`;
         },
-        onError: (err)=> showErr('PayPal error: ' + (err?.message || err))
+        onError: (err) => showErr('PayPal error: ' + (err?.message || err))
       }).render(container);
     }
 
     try {
-      wireButton('#paypal-basic', BASIC_PLAN_ID, 'P-4WB60771BW6228915NEEM3WA';
-      wireButton('#paypal-pro',   PRO_PLAN_ID, 'P-280022485U8934712NEEM5DI';
+      wireButton('#paypal-basic', BASIC_PLAN_ID, 'basic');
+      wireButton('#paypal-pro',   PRO_PLAN_ID,   'pro');
     } catch(e) {
       showErr('Failed to render PayPal buttons. Verify your Plan IDs and try again.');
     }
@@ -86,4 +85,3 @@
 </body>
 </html>
 
-    
